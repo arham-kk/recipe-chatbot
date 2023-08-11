@@ -1,28 +1,40 @@
 import gradio as gr
 import openai
 
-# Set up your OpenAI API credentials
+# Set up OpenAI GPT-3.5 credentials
 openai.api_key = "OPENAI-API"
 
-# Define the OpenAI engine
-ENGINE_NAME = "text-davinci-003"
+def generate_recipe(time_available, num_people, diet_preference, experience_level, ingredients):
+    prompt = f"Generate a recipe with the following parameters:\nTime Available: {time_available} minutes\nNumber of People: {num_people}\nDiet Preference: {diet_preference}\nExperience Level: {experience_level}\nAvailable Ingredients: {ingredients}\nRecipe:"
+    response = openai.Completion.create(
+        engine="text-davinci-003", 
+        prompt=prompt,
+        max_tokens=500
+    )
+    recipe = response.choices[0].text.strip()
+    return recipe
 
-# Define the function for generating recipes
-def generate_recipes(ingredients):
-    custom_prompt = "You have the following ingredients: " + ", ".join(ingredients) + "\n"
-    prompt = f"{custom_prompt}Please suggest some recipes using these ingredients.\n"
+def generate_with_button(time_available, num_people, diet_preference, experience_level, ingredients):
+    if ingredients == "":
+        return ""
+    recipe = generate_recipe(time_available, num_people, diet_preference, experience_level, ingredients)
+    return recipe
 
-    response = openai.Completion.create(engine=ENGINE_NAME, prompt=prompt, max_tokens=1000, temperature=0.5, top_p=1.0, n=5, stop=None, timeout=10)
-    recipes = [choice.text.strip() for choice in response.choices]
-    return recipes
+inputs = [
+    gr.inputs.Slider(minimum=10, maximum=240, step=10, label="Time Available (minutes)"),
+    gr.inputs.Number(label="Number of People"),
+    gr.inputs.Radio(["Vegan", "Low Calorie", "Regular"], label="Diet Preference"),
+    gr.inputs.Radio(["Beginner", "Intermediate", "Advanced"], label="Experience Level"),
+    gr.inputs.Textbox(label="Available Ingredients")
+]
 
-# Create a Gradio interface
-def recipe_suggestion(ingredients):
-    recipes = generate_recipes(ingredients)
-    recipe_list = "\n\n".join([f"Recipe {i + 1}:\n{recipe}" for i, recipe in enumerate(recipes)])
-    return recipe_list
+recipe_generator = gr.Interface(
+    fn=generate_with_button,
+    inputs=inputs,
+    outputs=gr.outputs.Textbox(),
+    live=False,
+    title="Recipe Generator",
+    description="Generate a recipe based on your preferences and available ingredients."
+)
 
-inputs = gr.inputs.Textbox(label="List of Ingredients (comma-separated)")
-output = gr.outputs.Textbox(label="Recipe Suggestions")
-
-gr.Interface(fn=recipe_suggestion, inputs=inputs, outputs=output, title="Recipe Suggestions", height=400, width=800).launch()
+recipe_generator.launch()
