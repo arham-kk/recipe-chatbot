@@ -1,14 +1,14 @@
 # Recipe Suggestions Chatbot
 
-This project utilizes OpenAI's text generation model to suggest recipes based on a list of ingredients provided by the user.
+This project utilizes OpenAI's text generation model to suggest recipes based on a list of ingredients & prefrences provided by the user.
 
 
-https://github.com/arham-kk/recipe-chatbot/assets/108623726/7903ff9e-06fe-4b1b-adc5-cc7e5a333495
+https://github.com/arham-kk/recipe-chatbot/assets/108623726/98e19fd0-39df-428d-afff-968e665b2888
 
 
 ## How it Works
 
-1. The user inputs a list of ingredients (comma-separated) into the provided textbox.
+1. The user inputs time available (minutes), number of people, experience level, diet preference and list of available ingredients (comma-separated) into the provided textbox.
 2. The system generates custom prompts using the provided ingredients.
 3. OpenAI's text generation model generates recipe suggestions based on the prompts.
 4. The suggested recipes are displayed in the output textbox.
